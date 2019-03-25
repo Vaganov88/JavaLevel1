@@ -2,15 +2,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JButton; // for casting as JButton
+import javax.swing.JButton;
 
 public class TicTacToeController
 {
-    //--------------------------------------------------------------------//
-    //    COMPONENT LABELS                                                //   
-    //    The controller is responsible for updating the views labels.    //
-    //    Customization of the update messages can be done here.          // 
-    //--------------------------------------------------------------------//
+
 
     private final String  STATUS_START        = "X moves to start the game";
     private final String  STATUS_CATS         = "Cat's game";
@@ -23,15 +19,12 @@ public class TicTacToeController
     private final String  OPPONENT_MODE_EASY  = "Computer Easy";
     private final String  OPPONENT_MODE_HARD  = "Computer Hard";
 
-    //------------------------------//
-    //    TIC-TAC-TOE CONTROLLER    //
-    //------------------------------//
+
 
     private TicTacToeView  view;
     private TicTacToeModel model;
 
-    // Tic Tac Toe controller constructor.
-    // Provides controller with access to the model & view and adds view event listeners. 
+
     public TicTacToeController( TicTacToeView view, TicTacToeModel model )
     {
         this.view = view;
@@ -43,36 +36,29 @@ public class TicTacToeController
         this.view.addOpponentModeButtonListener( new OpponentModeListener() );
     }
 
-    //-----------------//
-    //    LISTENERS    //
-    //-----------------//
 
-    // Class SquareListener.
-    // Handles game board square clicks from the view.
     private class SquareListener implements ActionListener
     {
-        // Used to prevent user moves while computer moves are in progress.
+
         private boolean blockMove = false;
 
-        @Override // A Square has been clicked
+        @Override
         public void actionPerformed( ActionEvent e )
         {
             if ( !blockMove ) {
-                String gameStatus;  // string will store game status to update view label.
+                String gameStatus;
                 JButton square = (JButton) e.getSource();
-                int row = (int) square.getClientProperty("row");  // store square identifiers
-                int col = (int) square.getClientProperty("col");  // to pass to model
+                int row = (int) square.getClientProperty("row");
+                int col = (int) square.getClientProperty("col");
 
-                // Prevent square interaction if game is complete or square has been played.
+
                 if ( model.gameIsComplete() ) return;
                 if ( model.squareHasBeenPlayed( row, col )) return;
 
-                // Tell model to make the move since the square is empty.
+
                 model.makeMoveInSquare( row, col );
 
-                // Ask model who moves next so we can update the view's game status label.
-                // This code block is only accessible when the user plays, so if we are in 
-                // computer mode we know the computer moves next.
+
                 if ( model.computerIsOpponent() ) {
                     gameStatus = STATUS_CP_MOVES;
                 } else if ( model.getPlayerToMove() == 'x' ) {
@@ -81,32 +67,30 @@ public class TicTacToeController
                     gameStatus = STATUS_O_MOVES;
                 }
 
-                // Ask model if game is complete so we can update the game status for that scenario.
+
                 if ( model.gameIsComplete() ) {
                     if ( model.getGameWinner() == ' ' ) gameStatus = STATUS_CATS;
                     if ( model.getGameWinner() == 'x' ) gameStatus = STATUS_X_WINS;
                     if ( model.getGameWinner() == 'o' ) gameStatus = STATUS_O_WINS;
                 }
 
-                // Update the view UI to display results of the move.
+
                 view.updateGameStatusLabelText( gameStatus );
                 view.updateGameBoardUI( model.getGameBoard() );
                 performWinLineUpdates();
 
-                // Automatically initiate the next move if we are in computer mode.
+
                 if ( !model.gameIsComplete() && model.getPlayerToMove() == 'o' && model.computerIsOpponent())
                     computerMove();
 
-            } // end if (!blockMove)
-        } // end SquareListener actionPerformed
-
-        // Asks model to make a computer move and displays results to view
+            }
+        }
         private void computerMove()
         {
-            blockMove = true;  // block user moves during computer move
+            blockMove = true;
             model.computerMove();
 
-            // Delay move from displaying to make game more natural.
+
             java.util.Timer timer = new java.util.Timer();
             timer.schedule( new java.util.TimerTask() {
                 @Override
@@ -120,13 +104,11 @@ public class TicTacToeController
                     view.updateGameStatusLabelText( gameStatus );
                     view.updateGameBoardUI( model.getGameBoard() );
                     performWinLineUpdates();
-                    blockMove = false; // remove block
+                    blockMove = false;
                 }
             }, 750 );
 
-        } // end computerMove()
-
-        // Asks view to update it's winner line if the game has been won.
+        }
         private void performWinLineUpdates()
         {
             if ( model.gameIsComplete() && model.getGameWinner() != ' ' ) {
@@ -138,11 +120,7 @@ public class TicTacToeController
             }
         }
 
-    } // end class SquareListener
-
-    // Class SquareHoverListener
-    // Controls game board square hover state. Hover states are prevented if 
-    // the game is not in progress or a square has already been played.
+    }
     private class SquareHoverListener extends MouseAdapter {
 
         @Override
@@ -163,54 +141,50 @@ public class TicTacToeController
             view.updateSquareUIForNormalState( row, col );
         }
 
-    } // end class SquareHoverListener
+    }
 
-    // Class NewGameListener.
-    // Handles clicks of the Start New Game button.
+
     class NewGameListener implements ActionListener
     {
         @Override
         public void actionPerformed( ActionEvent e )
         {
-            model.startNewGame();                            // reset model
-            view.resetWinnerLine();                          // resets (hides) view winner line
-            view.updateGameBoardUI( model.getGameBoard() );  // reset view gameboard
-            view.updateGameStatusLabelText( STATUS_START );  // reset view game status label
-        }
-
-    } // end class NewGameButtonListener
-
-    // Class OpponentModeListener.
-    // Handles clicks of the Change Mode button.
-    class OpponentModeListener implements ActionListener
-    {
-        @Override
-        public void actionPerformed( ActionEvent e )
-        {
-            // Switch from 2 player to easy computer.
-            if ( !model.computerIsOpponent() ) {
-                model.setComputerIsOpponent( true );
-                model.setComputerIsDifficult( false );
-                view.updateOpponentModeLabelText( OPPONENT_MODE_EASY );
-            }
-            // Switch from easy to hard computer.
-            else if ( model.computerIsOpponent() && !model.computerIsDifficult() ) {
-                model.setComputerIsDifficult( true );
-                view.updateOpponentModeLabelText( OPPONENT_MODE_HARD );
-            }
-            // Switch back to 2 player.
-            else
-            {
-                model.setComputerIsOpponent( false );
-                view.updateOpponentModeLabelText( OPPONENT_MODE_2P );
-            }
-            // Restart the game
             model.startNewGame();
             view.resetWinnerLine();
             view.updateGameBoardUI( model.getGameBoard() );
             view.updateGameStatusLabelText( STATUS_START );
         }
 
-    } // end class NewGameButtonListener
+    }
+    class OpponentModeListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
 
-}  // end class TicTacToeController
+            if ( !model.computerIsOpponent() ) {
+                model.setComputerIsOpponent( true );
+                model.setComputerIsDifficult( false );
+                view.updateOpponentModeLabelText( OPPONENT_MODE_EASY );
+            }
+
+            else if ( model.computerIsOpponent() && !model.computerIsDifficult() ) {
+                model.setComputerIsDifficult( true );
+                view.updateOpponentModeLabelText( OPPONENT_MODE_HARD );
+            }
+
+            else
+            {
+                model.setComputerIsOpponent( false );
+                view.updateOpponentModeLabelText( OPPONENT_MODE_2P );
+            }
+
+            model.startNewGame();
+            view.resetWinnerLine();
+            view.updateGameBoardUI( model.getGameBoard() );
+            view.updateGameStatusLabelText( STATUS_START );
+        }
+
+    }
+
+}

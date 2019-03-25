@@ -1,62 +1,60 @@
-import javax.swing.*;                  // graphics
+import javax.swing.*;
 
-import java.awt.event.ActionListener;  // respond to user
-import java.awt.Color;                 // adjust colors
-import java.awt.Component;             // adjust components
-import java.awt.Dimension;             // size the JFrame
-import java.awt.event.MouseAdapter;    // button hover states
+import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.Font;                  // adjust fonts
-import java.awt.GridLayout;            // game board grid
-import java.awt.Graphics;              // winner line
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 
 @SuppressWarnings("serial")
 public class TicTacToeView extends JFrame
 {
-    //----------------------------------------------------------//
-    //    CUSTOMIZE INITIAL TIC-TAC-TOE VIEW APPEARANCE HERE    //
-    //----------------------------------------------------------//
 
-    // General.
+
+
     private final String   APP_TITLE           = "TIC-TAC-TOE";
     private final String   APP_FONT            = "Sans Serif";
     private final int      APP_WIDTH           = 400;
     private final int      APP_HEIGHT          = 650;
     private final int      APP_PADDING         = 25;
-    // Color scheme.
+
     private final Color    BG_COLOR            = Color.WHITE;
-    private final Color    BG_COLOR_2          = Color.decode( "#EFFFF7" );  // off white
+    private final Color    BG_COLOR_2          = Color.decode( "#EFFFF7" );
     private final Color    TIC_TAC_NAVY        = Color.decode( "#34485D" );
     private final Color    TIC_TAC_GREEN       = Color.decode( "#19BC9C" );
-    private final Color    TIC_TAC_RED         = Color.decode( "#E74C3C" );  // normal
-    private final Color    TIC_TAC_RED_2       = Color.decode( "#D94334" );  // hover
-    private final Color    TIC_TAC_RED_3       = Color.decode( "#EA6052" );  // press
-    private final Color    TIC_TAC_BLUE        = Color.decode( "#3498DB" );  // normal
-    private final Color    TIC_TAC_BLUE_2      = Color.decode( "#2A8BC9" );  // hover
-    private final Color    TIC_TAC_BLUE_3      = Color.decode( "#5AADE3" );  // press
+    private final Color    TIC_TAC_RED         = Color.decode( "#E74C3C" );
+    private final Color    TIC_TAC_RED_2       = Color.decode( "#D94334" );
+    private final Color    TIC_TAC_RED_3       = Color.decode( "#EA6052" );
+    private final Color    TIC_TAC_BLUE        = Color.decode( "#3498DB" );
+    private final Color    TIC_TAC_BLUE_2      = Color.decode( "#2A8BC9" );
+    private final Color    TIC_TAC_BLUE_3      = Color.decode( "#5AADE3" );
     private final Color    TIC_TAC_GRAY        = Color.decode( "#7F8C9A" );
-    // FSU title bar.
+
     private final String   TITLE_TEXT          = "Tic-Tac-Toe";
     private final Color    TITLE_COLOR         = TIC_TAC_GREEN;
     private final int      TITLE_FONT_SIZE     = 35;
     private final int      TITLE_TOP_PAD       = 10;
     private final int      TITLE_BTM_PAD       = 20;
-    // Gameboard
+
     private final int      GAME_BOARD_SIZE     = APP_WIDTH - APP_PADDING;
     private final Color    GAME_FONT_COLOR     = TIC_TAC_NAVY;
     private final int      GAME_FONT_SIZE      = 75;
     private final int      GAME_LINE_WIDTH     = 3;
     private final Color    GAME_LINE_COLOR     = TIC_TAC_GREEN;
     private final Color    GAME_HOVER_COLOR    = BG_COLOR_2;
-    // Game status label
+
     private final String   STATUS_TEXT         = "X moves to start the game";
     private final int      STATUS_FONT_SIZE    = 20;
     private final Color    STATUS_COLOR        = TIC_TAC_NAVY;
     private final int      STATUS_TOP_PAD      = 30;
     private final int      STATUS_BTM_PAD      = 30;
-    // Bottom buttons
+
     private final int      BTN_GAP             = 5;
     private final int      BTN_HGT             = 125;
     private final int      BTN_FONT_SIZE       = 16;
@@ -69,28 +67,25 @@ public class TicTacToeView extends JFrame
     private final Color    OPPONENT_BG_COLOR   = TIC_TAC_BLUE;
     private final Color    OPPONENT_BG_HOVER   = TIC_TAC_BLUE_2;
     private final Color    OPPONENT_BG_PRESS   = TIC_TAC_BLUE_3;
-    // Credits label
+
     private final String   CREDITS_TEXT        = "Brian W. Howell";
     private final Color    CREDITS_COLOR       = TIC_TAC_GRAY;
     private final int      CREDITS_FONT_SIZE   = 12;
     private final int      CREDITS_LABEL_HGT   = 45;
-    // Opponent mode label
+
     private final String   OPPONENT_MODE_TEXT  = "2 player";
     private final Color    OPPONENT_MODE_COLOR = TIC_TAC_NAVY;
 
-    //------------------------//
-    //    TIC-TAC-TOE VIEW    //
-    //------------------------//
 
-    private JButton    square[][]        = new JButton[3][3];                         // gameboard
-    private JLabel     gameStatusLabel   = new JLabel( STATUS_TEXT, JLabel.CENTER );  // game status
-    private JButton    resetBtn          = new JButton();                             // new game button
-    private JButton    opponentBtn       = new JButton();                             // opponent button
-    private JLabel     opponentModeLabel = new JLabel( OPPONENT_MODE_TEXT );          // game mode label
+
+    private JButton    square[][]        = new JButton[3][3];
+    private JLabel     gameStatusLabel   = new JLabel( STATUS_TEXT, JLabel.CENTER );
+    private JButton    resetBtn          = new JButton();
+    private JButton    opponentBtn       = new JButton();
+    private JLabel     opponentModeLabel = new JLabel( OPPONENT_MODE_TEXT );
     private WinnerLine winnerLine        = new WinnerLine();
 
-    // Class WinnerLine
-    // When game is won, add line marking 3 in a row on the gameboard.
+
     public class WinnerLine extends JPanel
     {
         private int x1, y1, x2, y2;
@@ -111,36 +106,33 @@ public class TicTacToeView extends JFrame
             this.x2 = x2;
             this.y2 = y2;
         }
-    } // end class Winner Line
-
-    // Tic Tac Toe view constructor.
-    // Sets up the view and adds all view components.
+    }
     public TicTacToeView()
     {
-        // JFrame containing application.
+
         this.setTitle( APP_TITLE );
         this.setSize( APP_WIDTH, APP_HEIGHT );
         this.setMinimumSize( new Dimension( APP_WIDTH, APP_HEIGHT ));
         this.setMaximumSize( new Dimension( APP_WIDTH, APP_HEIGHT ));
         this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
-        // JPanel containing the tic-tac-toe game.
+
         JPanel ticTacPanel = new JPanel();
         ticTacPanel.setLayout( new BoxLayout( ticTacPanel, BoxLayout.PAGE_AXIS ));
         ticTacPanel.setSize( this.getContentPane().getWidth(), this.getContentPane().getHeight() );
         ticTacPanel.setBackground( BG_COLOR );
         this.add( ticTacPanel );
 
-        // FSU Tic-Tac-Nole title bar.
-        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, TITLE_TOP_PAD )));  // pad top
+
+        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, TITLE_TOP_PAD )));
         JLabel titleBarLabel = new JLabel( TITLE_TEXT, JLabel.CENTER );
         titleBarLabel.setForeground( TITLE_COLOR );
         titleBarLabel.setFont( new Font( APP_FONT, Font.BOLD, TITLE_FONT_SIZE ));
         titleBarLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
         ticTacPanel.add( titleBarLabel );
-        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, TITLE_BTM_PAD )));  // pad bottom
+        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, TITLE_BTM_PAD )));
 
-        // Layered pane contains the game board and winner line
+
         JLayeredPane gameBoardOverlayHandler = new JLayeredPane();
         gameBoardOverlayHandler.setOpaque( false );
         gameBoardOverlayHandler.setPreferredSize( new Dimension( GAME_BOARD_SIZE, GAME_BOARD_SIZE ));
@@ -149,25 +141,25 @@ public class TicTacToeView extends JFrame
         gameBoardOverlayHandler.setLayout( new OverlayLayout( gameBoardOverlayHandler ));
         ticTacPanel.add( gameBoardOverlayHandler );
 
-        // JPanel containing tic-tac-toe game board.
+
         JPanel gameBoard = new JPanel();
         gameBoard.setOpaque( false );
         gameBoard.setLayout( new GridLayout( 3, 3 ));
         gameBoardOverlayHandler.add( gameBoard );
 
-        // Winner line
+
         winnerLine.setOpaque( false );
         gameBoardOverlayHandler.add( winnerLine );
         winnerLine.setVisible( false );
 
-        // Add gameboard and winner line to their parent layered pane.
+
         gameBoardOverlayHandler.setLayer( winnerLine, 3 );
         gameBoardOverlayHandler.setLayer( gameBoard, 1 );
 
-        // Setup gameboard squares within the game board.
+
         for( int i = 0; i < 3; i++ ) {
             for( int j = 0; j < 3; j++ ) {
-                // Square setup.
+
                 square[i][j] = new JButton();
                 square[i][j].setPreferredSize( new Dimension( GAME_BOARD_SIZE / 3, GAME_BOARD_SIZE / 3 ));
                 square[i][j].setMinimumSize( new Dimension( GAME_BOARD_SIZE / 3, GAME_BOARD_SIZE / 3 ));
@@ -182,7 +174,7 @@ public class TicTacToeView extends JFrame
                 square[i][j].setFont( new Font( APP_FONT, Font.BOLD, GAME_FONT_SIZE ));
                 int lw = GAME_LINE_WIDTH;
                 Color lc = GAME_LINE_COLOR;
-                // Square border.
+
                 if ( i == 0 || i == 1 ) {
                     if ( j != 2 ) square[i][j].setBorder( BorderFactory.createMatteBorder( 0, 0, lw, lw, lc ));
                     if ( j == 2 ) square[i][j].setBorder( BorderFactory.createMatteBorder( 0, 0, lw, 0, lc ));
@@ -190,26 +182,24 @@ public class TicTacToeView extends JFrame
                     if ( j != 2 ) square[i][j].setBorder( BorderFactory.createMatteBorder( 0, 0, 0, lw, lc ));
                     if ( j == 2 ) square[i][j].setBorderPainted( false );
                 }
-                gameBoard.add( square[i][j] ); // add the square
-            } // end for( int j = 0; j < 3; j++ )
-        } // end for( int i = 0; i < 3; i++ )
-
-        // Game status label.
-        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, STATUS_TOP_PAD )));  // pad top
+                gameBoard.add( square[i][j] );
+            }
+        }
+        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, STATUS_TOP_PAD )));
         gameStatusLabel.setForeground( STATUS_COLOR );
         gameStatusLabel.setFont( new Font( APP_FONT, Font.PLAIN, STATUS_FONT_SIZE ));
         gameStatusLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
         ticTacPanel.add( gameStatusLabel );
-        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, STATUS_BTM_PAD )));  // pad bottom
+        ticTacPanel.add( Box.createRigidArea( new Dimension( 0, STATUS_BTM_PAD )));
 
-        // JPanel containing game setting buttons.
+
         JPanel btnPanel = new JPanel();
         btnPanel.setOpaque( false );
         btnPanel.setLayout( new GridLayout( 1, 2, BTN_GAP, BTN_GAP ) );
         btnPanel.setMaximumSize( new Dimension( GAME_BOARD_SIZE, APP_HEIGHT ));
         ticTacPanel.add( btnPanel );
 
-        // Start new game button.
+
         resetBtn.setText( NEW_GAME_BTN_TEXT );
         resetBtn.setBorderPainted( false );
         resetBtn.setOpaque(true);
@@ -222,7 +212,7 @@ public class TicTacToeView extends JFrame
         btnPanel.add( resetBtn );
         addNewGameButtonHoverState();
 
-        // Opponent button.
+
         opponentBtn.setText( GAME_MODE_BTN_TEXT );
         opponentBtn.setBorderPainted( false );
         opponentBtn.setOpaque(true);
@@ -235,14 +225,14 @@ public class TicTacToeView extends JFrame
         btnPanel.add( opponentBtn );
         addOpponentModeButtonHoverState();
 
-        // JPanel containing footer credits and opponent mode.
+
         JPanel footerPanel = new JPanel();
         footerPanel.setOpaque( false );
         footerPanel.setLayout( new GridLayout( 1, 2, 0, 0 ) );
         footerPanel.setMaximumSize( new Dimension( GAME_BOARD_SIZE - APP_PADDING, APP_HEIGHT ));
         ticTacPanel.add( footerPanel );
 
-        // Credits label.
+
         JLabel creditsLabel = new JLabel( CREDITS_TEXT );
         creditsLabel.setMinimumSize( new Dimension( GAME_BOARD_SIZE, CREDITS_LABEL_HGT ));
         creditsLabel.setMaximumSize( new Dimension( GAME_BOARD_SIZE, CREDITS_LABEL_HGT ));
@@ -252,7 +242,7 @@ public class TicTacToeView extends JFrame
         creditsLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
         footerPanel.add( creditsLabel );
 
-        // Opponent model label.
+
         opponentModeLabel.setMinimumSize( new Dimension( GAME_BOARD_SIZE, CREDITS_LABEL_HGT ));
         opponentModeLabel.setMaximumSize( new Dimension( GAME_BOARD_SIZE, CREDITS_LABEL_HGT ));
         opponentModeLabel.setHorizontalAlignment( SwingConstants.RIGHT );
@@ -261,12 +251,7 @@ public class TicTacToeView extends JFrame
         opponentModeLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
         footerPanel.add( opponentModeLabel );
 
-    } // end TicTacToeView() constructor
-
-    //------------------------------------------------------------//
-    //    VIEW UI UPDATES                                         //
-    //    Allow controller to initiate UI updates of the view     //
-    //------------------------------------------------------------//
+    }
 
     public void updateGameBoardUI( char[][] gameBoard )
     {
@@ -315,11 +300,7 @@ public class TicTacToeView extends JFrame
         opponentModeLabel.setText( text );
     }
 
-    //------------------------------------------------------------------------------//
-    //    EVENT LISTENERS                                                           //
-    //    Allow the controller to handle events associated with a view component    //
-    //    Display hover states on components                                        //
-    //------------------------------------------------------------------------------//
+
 
     public void addGameBoardSquareButtonListener( ActionListener listenForSquareButtonClick )
     {
@@ -346,7 +327,7 @@ public class TicTacToeView extends JFrame
 
     private void addNewGameButtonHoverState()
     {
-        // Hover states - Game reset button.
+
         resetBtn.addMouseListener( new MouseAdapter() {
             @Override
             public void mouseEntered( MouseEvent e ) {
@@ -374,7 +355,7 @@ public class TicTacToeView extends JFrame
 
     private void addOpponentModeButtonHoverState()
     {
-        // Hover state - Opponent button.
+
         opponentBtn.addMouseListener( new MouseAdapter() {
             @Override
             public void mouseEntered( MouseEvent e ) {
